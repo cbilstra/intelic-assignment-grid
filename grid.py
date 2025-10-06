@@ -31,7 +31,7 @@ class Plane:
                    self.current_value + OBSERVATION_SCORE_RESTORATION_RATE, 
                    self.current_value + 2 * OBSERVATION_SCORE_RESTORATION_RATE)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Gives y, x (matrix) notation"""
         return f"({self.y},{self.x})"
 
@@ -79,7 +79,7 @@ class Grid:
         self.drones: List[Drone] = drones
         self.size = len(self.planes)
 
-    def all_planes(self):
+    def all_planes(self) -> List[Plane]:
         """Flattens 2d to 1d"""
         return [e for row in self.planes for e in row]
     

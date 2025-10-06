@@ -64,25 +64,34 @@ def main():
     print(f"Grid size: {args.grid_size}")
     print(f"Number of steps: {args.num_steps}")
     print(f"Max duration: {args.max_duration}")
-    print(f"Starting position: {args.starting_positions}")
+    print(f"Starting positions: {args.starting_positions}")
+    print(f"Strategy: {args.strategy}")
+    run(args)
+
+def run(args):
+    num_workers = int(getenv("NUM_WORKERS"))
+    print(f"Num Workers: {num_workers}")
 
     t_0 = time.perf_counter()
     grid_factory = GridFactory.from_file(args.grid_size, args.starting_positions)
     runner = Runner(grid_factory, args.max_duration, args.num_steps, STRATEGY_MAP[args.strategy])
-    num_workers = int(getenv("NUM_WORKERS"))
     pool = mp.Pool(num_workers)
     paths_per_worker = pool.map(runner.start, [t_0]*num_workers)
+
+    max_score = 0
     for i, paths in enumerate(paths_per_worker):
-        print()
-        print(f"worker {i+1}")
+        print(f"\nworker {i+1}")
         total_score = 0
         for path in paths:
             path.print()
             total_score += path.score()
             print()
         print(f'With a total score of {total_score}')
-        print()
 
+        if max_score < total_score:
+            max_score = total_score
+
+    print(f"And a max score of {max_score}")
 
 
 if __name__ == "__main__":

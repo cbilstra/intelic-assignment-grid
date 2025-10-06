@@ -64,7 +64,7 @@ class Drone:
         self.moves: List[Move] = [Move(None, self.start_location, self.start_location.visit())]  
 
     def move(self, new_plane: Plane):
-        reward = new_plane.visit()  # TODO check no double visit otherwhere
+        reward = new_plane.visit()
         self.moves.append(Move(self.current_plane, new_plane, reward))
         self.current_plane = new_plane
 
@@ -80,7 +80,7 @@ class Grid:
         self.size = len(self.planes)
 
     def all_planes(self):
-        # TODO test
+        """Flattens 2d to 1d"""
         return [e for row in self.planes for e in row]
     
     def adjacent(self, plane: Plane) -> List[Plane]:
@@ -102,7 +102,8 @@ class Grid:
             if not (x_diff == 0 and y_diff == 0):
                 res.append(self.planes[plane.y + y_diff][plane.x + x_diff])
 
-        # TODO we could test if another drone is not yet in that plane
+        # NOTE we could test if another drone is not yet in that plane. 
+        # The score of that plane will be 0 though, so not interesting for this drone to visit.
         return res
     
     def tick(self):

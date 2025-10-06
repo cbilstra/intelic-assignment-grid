@@ -4,7 +4,12 @@ from itertools import product
 import os
 from typing import List, Optional, Tuple
 from os.path import join
+from dotenv import load_dotenv
 
+load_dotenv()
+
+
+OBSERVATION_SCORE_RESTORATION_RATE = float(os.getenv("OBSERVATION_SCORE_RESTORATION"))
 
 class Plane:
     def __init__(self, x: int, y: int, initial_value: Number):
@@ -19,7 +24,12 @@ class Plane:
         return res
 
     def tick(self):
-        self.current_value = min(self.initial_value, self.current_value + float(os.getenv("OBSERVATION_SCORE_RESTORATION")))
+        self.current_value = min(self.initial_value, self.current_value + OBSERVATION_SCORE_RESTORATION_RATE)
+
+    def value_next_tick(self) -> Number:
+        return min(self.initial_value, 
+                   self.current_value + OBSERVATION_SCORE_RESTORATION_RATE, 
+                   self.current_value + 2 * OBSERVATION_SCORE_RESTORATION_RATE)
 
     def __str__(self):
         """Gives y, x (matrix) notation"""

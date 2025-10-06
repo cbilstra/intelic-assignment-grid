@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from numbers import Number
 import time
 import random
+from statistics import mean
 from typing import List, Type
 from grid import GridFactory, Drone, Path, Grid
 
@@ -32,9 +33,19 @@ class Random(Strategy):
         drone.move(chosen_plane)
 
 
-class Smart(Strategy):
+class LookAhead(Strategy):
     def tick(self, grid, drone):
-        ...
+        possible_planes = grid.adjacent(drone.current_plane)
+        best_plane = None
+        best_reward = 0
+        for plane in possible_planes:
+            reachable_next_tick = grid.adjacent(plane)
+            reachable_values_next_tick = [e.value_next_tick() for e in reachable_next_tick]
+            avg_value_for_plane = mean(reachable_values_next_tick) + plane.current_value
+            if avg_value_for_plane > best_reward:
+                best_reward = avg_value_for_plane
+                best_plane = plane
+        drone.move(best_plane)
 
 
 class Runner:
@@ -59,5 +70,5 @@ class Runner:
 STRATEGY_MAP = {
     'random': Random,
     'greedy': Greedy,
-    'smart': Smart,
+    'look-ahead': LookAhead,
 }

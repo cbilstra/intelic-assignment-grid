@@ -16,6 +16,6 @@ python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
 
-python3 main.py 20 5 1 0,0%3,3 --strategy random
+python3 main.py 20 5 1 0,0#3,3 --strategy random
 ```
 Don't forget to put {20/100/1000}.txt in the data folder.

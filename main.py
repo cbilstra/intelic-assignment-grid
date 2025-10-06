@@ -13,14 +13,14 @@ load_dotenv()
 
 def parse_starting_position(value: str) -> List[Tuple[int, int]]:
     try:
-        tuples = value.split("%")
+        tuples = value.split("#")
         res = []
         for tup in tuples:
             x_str, y_str = tup.split(',')
             res.append((int(x_str), int(y_str)))
         return res
     except:
-        raise argparse.ArgumentTypeError("Starting position must be in the format <int>,<int>%<int>,<int>%...")
+        raise argparse.ArgumentTypeError("Starting position must be in the format <int>,<int>#<int>,<int>#...")
 
 def main():
     parser = argparse.ArgumentParser(
@@ -49,13 +49,13 @@ def main():
     parser.add_argument(
         "starting_positions",
         type=parse_starting_position,
-        help="Starting position on the grid as <int>,<int>%<int>,<int>%.. (e.g., 3,4%4,5)"
+        help="Starting position on the grid as <int>,<int>#<int>,<int>#.. (e.g., 3,4#4,5)"
     )
 
     parser.add_argument(
         '--strategy',
         choices=STRATEGY_MAP.keys(),
-        required=True,
+        default='random',
         help="Strategy to use: 'random', 'greedy', or 'smart'"
     )
 

@@ -1,11 +1,23 @@
 import argparse
+from typing import List, Tuple
+from dotenv import load_dotenv
 
-def parse_starting_position(value: str):
+from grid import GridFactory
+from simulate import STRATEGY_MAP, Runner
+
+load_dotenv()
+
+
+def parse_starting_position(value: str) -> List[Tuple[int, int]]:
     try:
-        x_str, y_str = value.split(',')
-        return int(x_str), int(y_str)
-    except ValueError:
-        raise argparse.ArgumentTypeError("Starting position must be in the format <int>,<int>")
+        tuples = value.split("%")
+        res = []
+        for tup in tuples:
+            x_str, y_str = tup.split(',')
+            res.append((int(x_str), int(y_str)))
+        return res
+    except:
+        raise argparse.ArgumentTypeError("Starting position must be in the format <int>,<int>%<int>,<int>%...")
 
 def main():
     parser = argparse.ArgumentParser(
@@ -32,17 +44,35 @@ def main():
     )
 
     parser.add_argument(
-        "starting_position",
+        "starting_positions",
         type=parse_starting_position,
-        help="Starting position on the grid as <x>,<y> (e.g., 3,4)"
+        help="Starting position on the grid as <int>,<int>%<int>,<int>%.. (e.g., 3,4%4,5)"
     )
 
-    args = parser.parse_args()
+    parser.add_argument(
+        '--strategy',
+        choices=STRATEGY_MAP.keys(),
+        required=True,
+        help="Strategy to use: 'random', 'greedy', or 'smart'"
+    )
 
+
+    args = parser.parse_args()
     print(f"Grid size: {args.grid_size}")
     print(f"Number of steps: {args.num_steps}")
     print(f"Max duration: {args.max_duration}")
-    print(f"Starting position: {args.starting_position}")
+    print(f"Starting position: {args.starting_positions}")
+
+    grid_factory = GridFactory.from_file(args.grid_size, args.starting_positions)
+    runner = Runner(grid_factory, args.max_duration, args.num_steps, STRATEGY_MAP[args.strategy]())
+    paths = runner.start()
+    total_score = 0
+    for path in paths:
+        path.print()
+        total_score += path.score()
+    print(f'With a total score of {total_score}')
+
+
 
 if __name__ == "__main__":
     main()

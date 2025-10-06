@@ -1,5 +1,5 @@
 # intelic-assignment-grid
-Optimizing paths over a grid
+Optimizing paths over a grid. I spent 0.25 + 2 = 2.25 hours till now.
 
 ## Getting started
 ```bash

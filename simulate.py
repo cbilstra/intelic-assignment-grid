@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from numbers import Number
 import time
 import random
-from typing import List
+from typing import List, Type
 from grid import GridFactory, Drone, Path, Grid
 
 
@@ -38,19 +38,19 @@ class Smart(Strategy):
 
 
 class Runner:
-    def __init__(self, grid_factory: GridFactory, max_time: Number, max_steps: int, strategy: Strategy):
+    def __init__(self, grid_factory: GridFactory, max_time: Number, max_steps: int, strategy: Type[Strategy]):
         self.grid_factory = grid_factory
         self.max_time = max_time
         self.max_steps = max_steps
         self.strategy = strategy
 
-    def start(self) -> List[Path]:
+    def start(self, t_0: float) -> List[Path]:
         grid = self.grid_factory.new_grid()
-        t_0 = time.perf_counter()
         num_steps = 0
+        strategy = self.strategy()
         while time.perf_counter() - t_0 < self.max_time and num_steps < self.max_steps:
             for drone in grid.drones:
-                self.strategy.tick(grid, drone)
+                strategy.tick(grid, drone)
             grid.tick()
             num_steps += 1 
 

@@ -1,6 +1,9 @@
 import argparse
+import time
+import multiprocessing as mp
 from typing import List, Tuple
 from dotenv import load_dotenv
+from os import getenv
 
 from grid import GridFactory
 from simulate import STRATEGY_MAP, Runner
@@ -63,14 +66,22 @@ def main():
     print(f"Max duration: {args.max_duration}")
     print(f"Starting position: {args.starting_positions}")
 
+    t_0 = time.perf_counter()
     grid_factory = GridFactory.from_file(args.grid_size, args.starting_positions)
-    runner = Runner(grid_factory, args.max_duration, args.num_steps, STRATEGY_MAP[args.strategy]())
-    paths = runner.start()
-    total_score = 0
-    for path in paths:
-        path.print()
-        total_score += path.score()
-    print(f'With a total score of {total_score}')
+    runner = Runner(grid_factory, args.max_duration, args.num_steps, STRATEGY_MAP[args.strategy])
+    num_workers = int(getenv("NUM_WORKERS"))
+    pool = mp.Pool(num_workers)
+    paths_per_worker = pool.map(runner.start, [t_0]*num_workers)
+    for i, paths in enumerate(paths_per_worker):
+        print()
+        print(f"worker {i+1}")
+        total_score = 0
+        for path in paths:
+            path.print()
+            total_score += path.score()
+            print()
+        print(f'With a total score of {total_score}')
+        print()
 
 
 
